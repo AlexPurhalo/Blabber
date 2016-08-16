@@ -1,10 +1,9 @@
+var Uri = require('jsuri');
 var React = require('react');
 var Reqwest = require('reqwest');
-var BlabsView = require('../blabs/View.jsx');
 var Menu = require('./Menu.jsx');
 var Router = require('react-router');
 var RouteHandler = Router.RouteHandler;
-var Uri = require('jsuri');
 
 module.exports = React.createClass({
     getDefaultProps: function() {
@@ -31,8 +30,23 @@ module.exports = React.createClass({
             type: 'json',
             method: 'get',
             contentType: 'application/json',
-            success: successFunction,
             headers: {'Authorization': sessionStorage.getItem('jwt')},
+            success: successFunction,
+            error: function(error) {
+                console.error(url, error['response']);
+                location = '/';
+            }
+        });
+    },
+    writeToAPI: function(method, url, data, successFunction) {
+        Reqwest({
+            url: url,
+            data: data,
+            type: 'json',
+            method: method,
+            contentType: 'application/json',
+            headers: {'Authorization': sessionStorage.getItem('jwt')},
+            success: successFunction,
             error: function(error) {
                 console.error(url, error['response']);
                 location = '/';
@@ -49,7 +63,7 @@ module.exports = React.createClass({
             <div id="app" className={menu}>
                 <Menu origin={this.props.origin} sendMenuClick={this.handleMenuClick} signedIn={this.state.signedIn} />
                 <div id="content">
-                    <RouteHandler origin={this.props.origin} readFromAPI={this.readFromAPI} signedIn={this.state.signedIn} />
+                    <RouteHandler origin={this.props.origin} readFromAPI={this.readFromAPI} writeToAPI={this.writeToAPI} currentUser={this.state.currentUser} signedIn={this.state.signedIn} />
                 </div>
             </div>
         );
