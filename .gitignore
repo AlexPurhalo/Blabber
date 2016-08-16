@@ -28,4 +28,3 @@
 # Ignore environment files
 /config/environments/development.rb
 .idea
-db/migrate/
